@@ -15,7 +15,7 @@ while getopts d:e: option
 done
 
 
-domains=($DOMAIN www.$DOMAIN)
+domains=($DOMAIN)
 rsa_key_size=4096
 data_path="./data/certbot"
 email=$EMAIL # Adding a valid address is strongly recommended
