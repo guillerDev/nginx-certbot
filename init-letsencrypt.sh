@@ -5,10 +5,20 @@ if ! [ -x "$(command -v docker-compose)" ]; then
   exit 1
 fi
 
-domains=(example.org www.example.org)
+while getopts d:e: option
+  do
+    case "${option}"
+    in
+    d) DOMAIN=${OPTARG};;
+    e) EMAIL=${OPTARG};;
+  esac
+done
+
+
+domains=($DOMAIN www.$DOMAIN)
 rsa_key_size=4096
 data_path="./data/certbot"
-email="" # Adding a valid address is strongly recommended
+email=$EMAIL # Adding a valid address is strongly recommended
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
 if [ -d "$data_path" ]; then
@@ -18,6 +28,9 @@ if [ -d "$data_path" ]; then
   fi
 fi
 
+echo '### Creating nginx configuration from app.template'
+export DOMAIN=$DOMAIN
+envsubst \$DOMAIN < ./data/nginx/app.template > ./data/nginx/app.conf;
 
 if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/ssl-dhparams.pem" ]; then
   echo "### Downloading recommended TLS parameters ..."
